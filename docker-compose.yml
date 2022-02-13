@@ -1,0 +1,31 @@
+version: '3.7'
+networks:
+  internal:
+    external: false
+services:
+  terraria:
+    #image: willquill/terraria:1.4.3.2
+    image: terraria:latest
+    container_name: terraria
+    volumes:
+      - $WLD_DIR_HOST:/root/.local/share/Terraria/Worlds
+    networks:
+      - internal
+    ports:
+      - $PORT:$PORT
+    environment:
+      - TZ=$TZ
+      - WORLD_FILENAME=$WLD_FILE_HOST
+    restart: unless-stopped
+  ddclient:
+    image: linuxserver/ddclient
+    container_name: ddclient
+    networks:
+      - internal
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+    volumes:
+      - ./ddclient.conf:/config/ddclient.conf
+    restart: unless-stopped
