@@ -4,18 +4,18 @@ networks:
     external: false
 services:
   terraria:
-    #image: willquill/terraria:1.4.3.2
-    image: terraria:latest
-    container_name: terraria
+    image: beardedio/terraria:vanilla-latest
+    container_name: terraria-rakara
     volumes:
-      - $WLD_DIR_HOST:/root/.local/share/Terraria/Worlds
+      - $HOST_WORLD_PATH:/config
     networks:
       - internal
     ports:
-      - $PORT:$PORT
+      - 7777:7777
     environment:
-      - TZ=$TZ
-      - WORLD_FILENAME=$WLD_FILE_HOST
+      - world=$HOST_WORLD_FILENAME
+    tty: true
+    stdin_open: true
     restart: unless-stopped
   ddclient:
     image: linuxserver/ddclient

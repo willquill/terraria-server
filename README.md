@@ -1,41 +1,62 @@
 # terraria-server
 
-Quickly deploy a dedicated Terraria server to Proxmox as an LXC container
+Quickly deploy a dedicated Terraria server via Docker
 
 ## Pre-requisites
 
 ### Required Pre-requisites
 
-- Ready to run docker containers
+- Your host is ready to run docker containers
+- You have a world file already
+
+If you don't have a world file already, checkout the [beardedio/terraria](https://github.com/beardedio/terraria) GitHub page for instructions on creating a world.
 
 ## Deployment
 
-### Docker Run
+### Prepare Server Files
+
+Included in this repo are two files:
+
+- serverconfig.txt
+- banlist.txt
+
+Copy these files as well as your world file to a destination path you'd like to store your world.
+
+My path: `/mnt/media/games/terraria/rakara`
+
+Things you may want to modify in serverconfig.txt before running the server:
+
+- motd (message of the day)
+- password
+
+Take a look at the other options in the file as well.
+
+### Prepare ddclient
+
+If you want to use a hostname to connect to your server instead of IP address, and if you use Cloudflare as your nameserver, do this:
+
+`mv ddclient-sample.conf ddclient.conf`
+
+Then edit the `ddclient.conf` file for your needs
+
+### Option 1: Docker Run
 
 Set the location of your world file:
 
-`WLD_DIR_HOST=/mnt/media/games/terraria/rakara`
+`export HOST_WORLD_PATH=/mnt/media/games/terraria/rakara`
 
-`WLD_FILE_HOST=Rakara.wld`
+`export HOST_WORLD_FILENAME=Rakara.wld`
 
-*Will write the actual docker run command later...*
+```sh
+docker run -dit \
+  --name=terraria-rakara \
+  -v $HOST_WORLD_PATH:/config \
+  -e world=$HOST_WORLD_FILENAME \
+  -p 7777:7777 \
+  beardedio/terraria:vanilla-latest
+```
 
-`docker run -d terraria:latest -p 7777:7777 -v $WLD_DIR_HOST:/root/.local/share/Terraria/Worlds -e WORLD_FILENAME=$WLD_FILE_HOST`
-
-`sudo docker run -d --rm -p 7777:7777 -v $WLD_DIR_HOST:/root/.local/share/Terraria/Worlds terraria:latest WORLD_FILENAME=Rakara.wld`
-
-WHY THE BELOW WITH DOCKER LOGS?!?
-
-logpath=/terraria-server/logs
-Server configuration not found, running with default server configuration.
-Please ensure your desired serverconfig.txt file is volumed into docker: -v <path_to_config_file>:/config
-No world file specified in environment WORLD_FILENAME.
-Running server with command flags: WORLD_FILENAME=Rakara.wld
-Error Logging Enabled.
-Terraria Server v1.4.3.2
-
-
-### Docker Compose
+### Option 2: Docker Compose
 
 Create the env file
 
@@ -45,49 +66,18 @@ Modify `.env`:
 
 `vim .env`
 
-If you don't want to use ddclient, just delete that container from the `docker-compose.yml` file.
+If you dont want to use ddclient, just delete that container from the `docker-compose.yml` file.
 
 Start it:
 
 `docker-compose up -d`
 
-## Building from Source
+## Credit
 
-### Build Dockerfile
+Helpful resources:
 
-`docker build . --tag terraria`
-
-Verify the image exists now. It should be at the top of this list
-
-`docker images`
-
-### Publish Docker image
-
-Tag the image
-
-`docker tag terraria willquill/terraria:1.4.3.2`
-
-Verify again to see the new tag
-
-`docker images`
-
-You may make mistakes, and you will want to build and tag over and over again. You can run the both the build and the tag commands with this script:
-
-```sh
-cat > build_and_tag.sh<< EOF
-#!/bin/sh
-docker build . --tag terraria
-docker tag terraria willquill/terraria:1.4.3.2
-EOF
-```
-
-Make it executable:
-
-chmod +x build_and_tag.sh
-
-Run it:
-
-./build_and_tag.sh
+- [beardedio/terraria](https://hub.docker.com/r/beardedio/terraria/)
+- [ryansheehan/terraria](https://github.com/ryansheehan/terraria)
 
 ## LICENSE
 
