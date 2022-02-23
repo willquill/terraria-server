@@ -9,7 +9,7 @@ packer {
 
 source "amazon-ebs" "ubuntu20" {
   ami_name      = "ubuntu20"
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   region        = "us-east-2"
   source_ami_filter {
     filters = {
@@ -24,8 +24,21 @@ source "amazon-ebs" "ubuntu20" {
 }
 
 build {
-  name    = "terraria-server"
+  name = "terraria-server"
   sources = [
     "source.amazon-ebs.ubuntu"
+  ]
+}
+
+provisioner "shell" {
+  environment_vars = [
+    "FOO=hello world",
+  ]
+  inline = [
+    "echo Installing Redis",
+    "sleep 30",
+    "sudo apt-get update",
+    "sudo apt-get install -y redis-server",
+    "echo \"FOO is $FOO\" > example.txt",
   ]
 }

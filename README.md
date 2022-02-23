@@ -4,9 +4,13 @@
 
 Quickly deploy a dedicated Terraria server to AWS.
 
-## Overview
+Steps involved to deploy your server:
 
-To use this, you'll simply modify the `tfvars` file and then run `terraform apply`.
+1. Modify variables.
+2. Create and deploy your AMI.
+3. Apply the Terraform.
+
+## Costs Overview
 
 AWS lets you use its services for [free](https://aws.amazon.com/free/) in three different ways:
 
@@ -40,8 +44,55 @@ Although actually deploying the server is as easy as running `terraform apply`, 
 
 1. Sign up for a new AWS account (to quality for the 12 months free).
     - If you want to use an AWS account you've had for more than 12 months, you will be billed for the use of EC2, EBS, and S3.
+1. [Have Packer installed](https://learn.hashicorp.com/tutorials/packer/get-started-install-cli).
+
+
+## Prepare 
 2. Manually create your DynamoDB table.
 
+
+
+
+
+
+## Build your AMI
+
+Hashicorp tutorial located [here](https://learn.hashicorp.com/tutorials/packer/aws-get-started-build-image?in=packer/aws-get-started).
+
+What we're doing here:
+
+- Specifying your AWS account credentials
+- Creating an AMI on your AWS account for the Terraria server
+
+### Install Packer
+
+See instructions [here](https://learn.hashicorp.com/tutorials/packer/get-started-install-cli).
+
+I use openSUSE Tumbleweed, so I had to do follow the "Compile from source" instructions:
+
+`sudo zypper install go`
+
+`mkdir -p $(go env GOPATH)/src/github.com/hashicorp && cd $_`
+
+`git clone https://github.com/hashicorp/packer.git && cd packer && make dev`
+
+`sudo cp bin/packer /usr/local/bin`
+
+### Export your environmental variables
+
+`export AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY`
+
+`export AWS_SECRET_ACCESS_KEY=YOUR_SECRET_KEY`
+
+### Initialize, format, validate, build
+
+`packer init .`
+
+`packer fmt .`
+
+`packer validate .`
+
+`packer build terraria-server.pkr.hcl`
 
 
 
@@ -56,18 +107,3 @@ You can also see current and previous versions under Releases.
 ## License
 
 MIT License
-
-
-## Build your AMI
-
-Hashicorp tutorial located [here](https://learn.hashicorp.com/tutorials/packer/aws-get-started-build-image?in=packer/aws-get-started).
-
-### Export your environmental variables
-
-`export AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY`
-
-`export AWS_SECRET_ACCESS_KEY=YOUR_SECRET_KEY`
-
-### Initialize your config
-
-`packer init .`
