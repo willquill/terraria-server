@@ -1,46 +1,20 @@
-variable "project_name" {
+# If you set a default value for a variable, you do not need to declare it in the tfvars file.
+# The tfvars file is for setting the value of the variable to be used in this Terraform state.
+# In some cases, the default value you give a variable may be the same value you give it in tfvars.
+
+variable "project" {
   type    = string
   default = "MyProject"
 }
 
-variable "vpc_name" {
+variable "repository" {
   type    = string
-  default = "MyVPC"
+  default = "username/repository"
 }
 
-variable "vpc_region" {
+variable "region" {
   type    = string
   default = "us-east-2"
-}
-
-variable "vpc_cidr" {
-  type    = string
-  default = "10.0.0.0/16"
-}
-
-variable "vpc_azs" {
-  type    = list(string)
-  default = ["us-east-2a", "us-east-2b", "us-east-2c"]
-}
-
-variable "vpc_private_subnets" {
-  type    = list(string)
-  default = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-}
-
-variable "vpc_public_subnets" {
-  type    = list(string)
-  default = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
-}
-
-variable "vpc_enable_nat_gateway" {
-  type    = bool
-  default = false
-}
-
-variable "vpc_enable_vpn_gateway" {
-  type    = bool
-  default = false
 }
 
 variable "host_enable" {
@@ -50,5 +24,5 @@ variable "host_enable" {
 
 variable "host_instance_type" {
   type    = string
-  default = "t3.micro"
+  default = "t2.micro"
 }

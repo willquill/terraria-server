@@ -1,0 +1,16 @@
+---
+# Copy the repo that contains the Docker Compose
+
+- name: Clone docker-nginx-letsencrypt-ombi
+  git:
+    repo: "{{ repository }}"
+    dest: "{{ compose_repo_directory }}"
+    clone: yes
+    update: yes
+
+# Generate .env file from template
+
+- name: Generate .env file
+  template:
+    src: ".env.j2"
+    dest: "{{ compose_repo_directory }}/.env"

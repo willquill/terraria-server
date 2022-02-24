@@ -7,7 +7,7 @@ packer {
   }
 }
 
-variable "project_name" {
+variable "project" {
   type    = string
   default = "terraria-server"
 }
@@ -17,7 +17,7 @@ variable "region" {
   default = "us-east-2"
 }
 
-variable "repository_name" {
+variable "repository" {
   type    = string
   default = "willquill/terraria-server"
 }
@@ -27,7 +27,7 @@ locals {
 }
 
 source "amazon-ebs" "amzn2-docker" {
-  ami_name                = "${lower(var.project_name)}-docker-${local.timestamp}"
+  ami_name                = "${lower(var.project)}-docker-${local.timestamp}"
   ami_description         = "Amazon Linux 2 host with Docker and Docker Compose"
   instance_type           = "t3.micro"
   region                  = "${var.region}"
