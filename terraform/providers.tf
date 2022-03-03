@@ -9,12 +9,12 @@ terraform {
 
 # Configure the AWS Provider
 provider "aws" {
-  region = var.vpc_region
+  region = region
 
   default_tags {
     tags = {
-      Environment = "Test"
-      Owner       = "Woody"
+      Environment = "Terraria"
+      Repository  = var.repository_name
       Terraform   = "True"
       Project     = var.project_name
     }

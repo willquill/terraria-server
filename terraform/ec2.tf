@@ -24,7 +24,7 @@ resource "aws_instance" "docker_host" {
 
   ami                         = data.aws_ami.docker_host.id
   associate_public_ip_address = true
-  instance_type               = var.host_instance_type 
+  instance_type               = var.host_instance_type
   key_name                    = data.aws_key_pair.main.key_name
   vpc_security_group_ids = [
     module.sg_host_inbound_ssh.security_group_id,

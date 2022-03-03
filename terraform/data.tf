@@ -12,26 +12,14 @@ data "aws_ssm_parameter" "key_pair_name" {
   name = "/${lower(var.project_name)}/terraform/key-pair-name"
 }
 
-data "aws_ssm_parameter" "aws_route53_zone" {
-  name = "/${lower(var.project_name)}/terraform/aws-route53-zone"
-}
-
-data "aws_ssm_parameter" "host_route53_address_prefix" {
-  name = "/${lower(var.project_name)}/terraform/host-route53-address-prefix"
-}
-
 data "aws_ssm_parameter" "mr_db_backup_bucket_name" {
   name = "/${lower(var.project_name)}/media-requests/s3-db-backup-bucket-name"
 }
 
 data "aws_ssm_parameter" "aws_account_id" {
-  name = "/${lower(var.project_name)}/terraform/aws-acount-id"
+  name = "/${lower(var.project_name)}/terraform/aws-account-id"
 }
 
 data "aws_key_pair" "main" {
   key_name = data.aws_ssm_parameter.key_pair_name.value
-}
-
-data "aws_route53_zone" "selected" {
-  name = data.aws_ssm_parameter.aws_route53_zone.value
 }

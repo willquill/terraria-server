@@ -7,7 +7,7 @@ packer {
   }
 }
 
-variable "project" {
+variable "project_name" {
   type    = string
   default = "terraria-server"
 }
@@ -17,9 +17,19 @@ variable "region" {
   default = "us-east-2"
 }
 
-variable "repository" {
+variable "repository_name" {
   type    = string
   default = "willquill/terraria-server"
+}
+
+variable "instance_type" {
+  type    = string
+  default = "t2.micro"
+}
+
+variable "ebs_optimized" {
+  type    = bool
+  default = true
 }
 
 locals {
@@ -27,14 +37,14 @@ locals {
 }
 
 source "amazon-ebs" "amzn2-docker" {
-  ami_name                = "${lower(var.project)}-docker-${local.timestamp}"
+  ami_name                = "${lower(var.project_name)}-docker-${local.timestamp}"
   ami_description         = "Amazon Linux 2 host with Docker and Docker Compose"
-  instance_type           = "t3.micro"
-  region                  = "${var.region}"
+  instance_type           = var.instance_type
+  region                  = var.region
   ami_virtualization_type = "hvm"
   ssh_username            = "ec2-user"
   ssh_timeout             = "1h"
-  ebs_optimized           = true
+  ebs_optimized           = var.ebs_optimized
   source_ami_filter {
     filters = {
       name                = "amzn2-ami-kernel-5.10-hvm*"
@@ -50,7 +60,7 @@ source "amazon-ebs" "amzn2-docker" {
     Base_AMI_ID   = "{{ .SourceAMI }}"
     Base_AMI_Name = "{{ .SourceAMIName }}"
     Project       = "${var.project_name}"
-    Repository    = "${var.repository_name}
+    Repository    = "${var.repository_name}"
   }
 }
 

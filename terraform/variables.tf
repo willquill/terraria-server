@@ -2,12 +2,12 @@
 # The tfvars file is for setting the value of the variable to be used in this Terraform state.
 # In some cases, the default value you give a variable may be the same value you give it in tfvars.
 
-variable "project" {
+variable "project_name" {
   type    = string
   default = "MyProject"
 }
 
-variable "repository" {
+variable "repository_name" {
   type    = string
   default = "username/repository"
 }
@@ -25,4 +25,14 @@ variable "host_enable" {
 variable "host_instance_type" {
   type    = string
   default = "t2.micro"
+}
+
+variable "dollar_threshold" {
+  type    = string
+  default = "1"
+}
+
+variable "email_address" {
+  type    = string
+  default = ""
 }

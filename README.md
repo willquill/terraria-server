@@ -54,9 +54,13 @@ For both automatic and manual deployments, you'll need:
 - An AWS account
   - If you want to use an AWS account you've had for more than 12 months, you will be billed for the use of EC2, EBS, and S3.
 - AWS IAM user with programmatic access (access ID and secret key)
-- If you want to use a remote Terraform state, you need an S3 bucket for storing it. Instead, you can also keep the state file in your repo if you'd like.
+- AWS CLI already set up locally (run `aws configure` and enter access ID and key)
+- If you want to use a remote Terraform state, you need an S3 bucket for storing it. Instead, you can also keep the state file in your repo if you'd like
+  - See terraform/backend.tf
 - If you want to use a remote Terraform state, you'll need a DynamoDB table to manage Terraform state locking
-- If you want to store parameters in AWS (see `terraform/data.tf`), you'll need to create them in advance in the AWS Systems Manager parameter store
+  - See terraform/backend.tf
+- If you want to store parameters in AWS, you'll need to create them in advance in the AWS Systems Manager parameter store
+  - See terraform/data.tf
 
 For manual deployments, you'll also need:
 
@@ -64,18 +68,26 @@ For manual deployments, you'll also need:
   - [Packer](https://learn.hashicorp.com/tutorials/packer/get-started-install-cli).
   - Terraform
   - Ansible
+  - awscli
 
 ## Deploy Automatically
 
-So you want your own Terraria Server?! Here's how ya do it.
+So you want your own Terraria Server automatically?! Here's how ya do it.
 
 Clone (or [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo)) and enter the repo
 
 `git clone https://github.com/willquill/terraria-server.git && cd terraria-server`
 
+Modify `dependencies.tf` to change the `github_name` variable to your own github.
+
+Create your S3 bucket and DynamoDB table for Terraform state:
+
+`terraform apply`
+
 Change the following variables in the following files for your use-case:
 
 - packer/amzn2-docker.auto.pkrvars.hcl
+
 
 Create a [CircleCI](https://app.circleci.com) account. Connect it to your GitHub. Click "Set Up Project"
 
@@ -111,17 +123,28 @@ What we're doing here:
 
 `packer validate .`
 
-`packer build terraria-server.pkr.hcl`
+`packer build .`
 
+### Deploy the Terraform dependencies
 
-Deploy the Terraform
+From the root directory (don't be in the terraform directory):
+
+Modify `dependencies.tf` to change the `github_name` variable to your own github.
+
+Create your S3 bucket and DynamoDB table for Terraform state:
 
 `terraform apply`
 
+### Deploy the infrastructure
 
-2. Manually create your DynamoDB table.
+> *Terraform note: The values you provide in `terraform.tfvars` override the default values in `variables.tf`, and the names of variables in `variables.tf` represent strings, booleans, and such that you use in your various Terraform resources.*
+> *If you're wondering why there are even two variable files at all, it's so you can provider default variable values yet use custom values with different applies, like `terraform apply -var-file="small-ec2.tfvars"` and `terraform apply -var-file="big-ec2.tfvars"`. Without specifying a var-file, if `terraform.tfvars` is present, Terraform will use those values. Otherwise, it will simply use the default variable values provided within input variables. So the tfvars file is optional*
 
+Enter the `terraform` directory and do the following:
 
+- Modify `backend.tf` to use the bucket you created in `dependencies.tf`
+- Modify `terraform.tfvars` to use your own values
+- In the AWS Console > AWS Systems Manager > Application Management > Parameter Store, manually add the parameters used in `data.tf`
 
 
 
@@ -137,6 +160,17 @@ For a Docker environment, see the `environment/docker` branch
 For a Proxmox (PVE) LXC environment, see the `environment/pve-lxc` branch
 
 You can also see current and previous versions under Releases.
+
+## FAQ
+
+Q: Why not used EBS-Optimized?
+A: Because in us-east-2, t2.micro is not available as EBS-Optimized. It's available for t3.micro, but t3.micro does not qualify in the free tier in us-east-2.
+
+Q: Why not use the newer t3.micro instead of t2.micro?
+A: See previous answer. In us-east-2, t3.micro does not qualify for free tier.
+
+Q: Why not create a VPC?
+A: While creating and using a VPC is free, using the NAT Gateway is not free. So I will simply use the default VPC and use a public IP address on my EC2 instance.
 
 ## License
 

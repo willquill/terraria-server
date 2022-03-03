@@ -4,11 +4,11 @@ resource "aws_cloudwatch_metric_alarm" "account_billing_alarm" {
   evaluation_periods  = "1"
   metric_name         = "EstimatedCharges"
   namespace           = "AWS/Billing"
-  period              = "600" # 5 minutes
+  period              = "14400" # 4 hours
   statistic           = "Sum"
-  threshold           = "1" # 1 dollar
+  threshold           = var.alert_dollar_threshold
   alarm_description   = "Billing alarm by account"
-  alarm_actions       = ["<your-sns-topic-arn-for-notification>"]
+  alarm_actions       = ["${aws_sns_topic.billing_alert.arn}"]
 
   dimensions {
     Currency      = "USD"
@@ -16,25 +16,12 @@ resource "aws_cloudwatch_metric_alarm" "account_billing_alarm" {
   }
 }
 
-resource "aws_sns_topic" "user_updates" {
-  name            = "user-updates-topic"
-  delivery_policy = <<EOF
-{
-  "http": {
-    "defaultHealthyRetryPolicy": {
-      "minDelayTarget": 20,
-      "maxDelayTarget": 20,
-      "numRetries": 3,
-      "numMaxDelayRetries": 0,
-      "numNoDelayRetries": 0,
-      "numMinDelayRetries": 0,
-      "backoffFunction": "linear"
-    },
-    "disableSubscriptionOverrides": false,
-    "defaultThrottlePolicy": {
-      "maxReceivesPerSecond": 1
-    }
-  }
+resource "aws_sns_topic" "billing_alert" {
+  name = "billing-alarm-notification"
 }
-EOF
+
+resource "aws_sns_topic_subscription" "email_target" {
+  topic_arn = aws_sns_topic.billing_alert.arn
+  protocol  = "email"
+  endpoint  = var.alert_email_address
 }
