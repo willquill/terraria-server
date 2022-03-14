@@ -36,3 +36,8 @@ variable "email_address" {
   type    = string
   default = ""
 }
+
+variable "ec2_public_key" {
+  type = string
+  default = ""
+}

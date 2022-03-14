@@ -18,6 +18,11 @@ data "aws_ami" "docker_host" {
   }
 }
 
+resource "aws_key_pair" "ec2_public_key" {
+  key_name   = "terraria-server"
+  public_key = var.ec2_public_key
+}
+
 resource "aws_instance" "docker_host" {
   # Enable or disable the instance with a variable
   count = var.host_enable ? 1 : 0
@@ -25,7 +30,7 @@ resource "aws_instance" "docker_host" {
   ami                         = data.aws_ami.docker_host.id
   associate_public_ip_address = true
   instance_type               = var.host_instance_type
-  key_name                    = data.aws_key_pair.main.key_name
+  key_name                    = aws_key_pair.ec2_public_key.key_name
   vpc_security_group_ids = [
     module.sg_host_inbound_ssh.security_group_id,
     module.sg_host_inbound_terraria.security_group_id

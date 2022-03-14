@@ -5,8 +5,8 @@ provider "aws" {
 
 # Variables used in dependencies.tf
 variable "github_name" {
-  type = string
-  default = "willquill"
+  type    = string
+  default = ""
 }
 
 # Bucket to store Terraform states

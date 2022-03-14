@@ -51,16 +51,30 @@ Something I'm considering adding later:
 
 For both automatic and manual deployments, you'll need:
 
+### General Pre-requisites
+
 - An AWS account
   - If you want to use an AWS account you've had for more than 12 months, you will be billed for the use of EC2, EBS, and S3.
 - AWS IAM user with programmatic access (access ID and secret key)
 - AWS CLI already set up locally (run `aws configure` and enter access ID and key)
-- If you want to use a remote Terraform state, you need an S3 bucket for storing it. Instead, you can also keep the state file in your repo if you'd like
-  - See terraform/backend.tf
-- If you want to use a remote Terraform state, you'll need a DynamoDB table to manage Terraform state locking
-  - See terraform/backend.tf
-- If you want to store parameters in AWS, you'll need to create them in advance in the AWS Systems Manager parameter store
-  - See terraform/data.tf
+
+### Modify variables
+
+1. Go into AWS Systems Manager and store some parameters (see `terraform/data.tf`)
+2. Put your own GitHub name into `terraform.tfvars`
+3. Modify variables in 'terraform/terraform.tfvars`
+
+### EC2 Key Pair
+
+Generate key pair:
+
+`ssh-keygen -t rsa -b 4096 -f ~/.ssh/terraria_server`
+
+Print public key:
+
+`cat ~/.ssh/terraria_server.pub`
+
+Paste that output into `ec2_public_key` in `terraform/terraform.tfvars`
 
 For manual deployments, you'll also need:
 
