@@ -1,0 +1,31 @@
+version: '3.7'
+networks:
+  internal:
+    external: false
+services:
+  terraria:
+    image: beardedio/terraria:vanilla-latest
+    container_name: terraria-rakara
+    volumes:
+      - $HOST_WORLD_PATH:/config
+    networks:
+      - internal
+    ports:
+      - 7777:7777
+    environment:
+      - world=$HOST_WORLD_FILENAME
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
+  ddclient:
+    image: linuxserver/ddclient
+    container_name: ddclient
+    networks:
+      - internal
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+    volumes:
+      - ./ddclient.conf:/config/ddclient.conf
+    restart: unless-stopped
