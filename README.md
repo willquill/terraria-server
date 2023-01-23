@@ -2,9 +2,7 @@
 
 Quickly deploy a dedicated Terraria server via Docker
 
-## Deploy Latest Version
-
-For a Docker environment, see the `environment/docker` branch
+## Prerequisites
 
 - Your host is ready to run docker containers
 - You have a world file already
